@@ -1,12 +1,12 @@
 define('ListeCourses',['TodoServices'],function(TodoServices){
 'use strict';
-    var addItems = function(wgtBody) {
+    var initList = function(wgtBody) {
         console.log("Hello World");
         var inputElt = wgtBody.querySelector('.todo');
         var formElt = wgtBody.querySelector('.add-form');
         var checkAllElt = wgtBody.querySelector('.checkall');
 
-        var url = 'http://localhost:8080/api/v1.0/Todos';
+        var url = TodoServices.url;
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
@@ -20,21 +20,6 @@ define('ListeCourses',['TodoServices'],function(TodoServices){
         };
 
         xhr.send(null);
-        /*WAFData.request(url, {
-            method: 'GET',
-            onComplete: function(jsonData) {
-
-            },
-            onFailure: function() {
-                var alert = new Alert({
-                    closable: true,
-                    visible: true,
-                    messageClassName: 'error',
-                    messages: '<b>Error</b> : serveur down'
-                });
-                alert.inject(wgtBody, 'top');
-            }
-        });*/
 
         checkAllElt.addEventListener('click', function(e) {
             var checkBoxes = wgtBody.querySelectorAll('.done');
@@ -47,10 +32,10 @@ define('ListeCourses',['TodoServices'],function(TodoServices){
 
             TodoServices.postLine( wgtBody, {
                 value: inputElt.value,
-                checked: checkAllElt.checked
+                done: checkAllElt.checked
             });
             inputElt.value = '';
         });
     };
-    return addItems;
+    return initList;
 });

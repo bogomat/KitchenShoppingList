@@ -5,12 +5,12 @@ define('TodoServices', [], function() {
     var todoService = {
 
         url: 'http://localhost:8080/api/v1.0/Todos',
-        removeLine: function(element) {
-            element.parentNode.removeChild(element);
-        },
         postLine: function(wgtBody, object) {
             var that = this;
             object = object || {};
+            object.value = object.value || '';
+            if(true != object.done)
+              object.done = false;
             var xhr = new XMLHttpRequest();
             xhr.open('POST', that.url, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
