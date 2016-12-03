@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Liste course</title>
+</head>
+
+<body>
+    <div class='widget-body'>
+        <form class='add-form'>
+            <input type="checkbox" class="checkall"></input>
+            <input class="todo">
+            <button type="submit" class="btn btn-primary">
+                <span class="fonticon fonticon-list-add">+</span>
+            </button>
+        </form>
+        <div class='container'>
+        </div>
+    </div>
+
+
+</body>
+<script src="require/require.js"></script>
+<script>
+    require(['ListeCourses'], function(main) {
+    'use strict';
+        var wdgtBody = document.body.querySelector('.widget-body');
+        main(wdgtBody);
+    });
+</script>
+
+</html>
