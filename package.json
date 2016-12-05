@@ -1,0 +1,27 @@
+{
+  "name": "kitchen_shopping_list",
+  "version": "0.1.0",
+  "description": "do your cooking shopping list",
+  "main": "client/index.html",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bogomat/KitchenShoppingList.git"
+  },
+  "keywords": [
+    "Kitchen",
+    "cooking",
+    "shopping",
+    "list"
+  ],
+  "author": "Bogomat philgayo",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/bogomat/KitchenShoppingList/issues"
+  },
+  "homepage": "https://github.com/bogomat/KitchenShoppingList#readme"
+}
