@@ -23,10 +23,11 @@
 </body>
 <script src="require/require.js"></script>
 <script>
-    require(['ListeCourses'], function(main) {
+    require(['ListeCourses'], function(ListeCourses) {
     'use strict';
         var wdgtBody = document.body.querySelector('.widget-body');
-        main(wdgtBody);
+        var listeCourses = new ListeCourses(wdgtBody);
+        listeCourses.init();
     });
 </script>
 

@@ -1,6 +1,6 @@
-define('TodoServices', [], function() {
+define('TodoServices', ['ShoppingLine'], function(ShoppingLine) {
 
-    var RowIdMap = new Map();
+    var RowArray = [];
     'use strict';
     var todoService = {
 
@@ -24,49 +24,24 @@ define('TodoServices', [], function() {
             xhr.send(data);
         },
         addLine: function(wgtBody, object) {
-            object = object || {};
-            object.id = object.id || 0;
-            object.value = object.value || '';
-            object.done = object.done || false;
             var destElt = wgtBody.querySelector('.container');
-            var that = this;
-            var rowElt = document.createElement("div");
-            var inputRowElt = document.createElement("input");
-            var deleteButonElt = document.createElement("button");
-            var checkyElt = document.createElement("input");
-            checkyElt.type = "checkbox";
-            checkyElt.classList.add('done');
-            checkyElt.checked = object.done;
-            inputRowElt.classList.add('RowInput');
-
-            /*
-                        checkAllElt.addEventListener('click',function() {
-                            checkyElt.checked=checkAllElt.checked;
-                        });*/
-            deleteButonElt.innerHTML = '-';
-            inputRowElt.value = object.value;
-
-            rowElt.appendChild(checkyElt);
-            rowElt.appendChild(inputRowElt);
-            rowElt.appendChild(deleteButonElt);
+            var rowElt = new ShoppingLine();
+            rowElt.id = object.id;
+            rowElt.build();
             if (destElt.childElementCount) {
-                destElt.insertBefore(rowElt, destElt.firstElementChild);
+                destElt.insertBefore(rowElt.div, destElt.firstElementChild);
             } else {
-                destElt.appendChild(rowElt);
+                destElt.appendChild(rowElt.div);
             }
-            RowIdMap.set(rowElt, object.id);
-            deleteButonElt.addEventListener('click', function(e) {
-                var parent = e.currentTarget.parentNode;
-
-                that.deleteLine(parent);
-            });
-            console.log(RowIdMap);
         },
 
         deleteLine: function(parent) {
 
             var that = this;
-            var id = RowIdMap.get(parent);
+            var line = RowArray.find(function(a) {
+              a.div === parent;
+            });
+            var id =line.id;
             var localurl = that.url + '/' + id;
             var xhr = new XMLHttpRequest();
             xhr.open('DELETE', localurl, true);
@@ -76,9 +51,20 @@ define('TodoServices', [], function() {
                     that.removeLine(parent);
             };
             xhr.send();
+        },
+        setCheck : function (parent,done) {
+          var line = RowArray.find(function(a) {
+            a.div === parent;
+          });
+          var id =line.id;
+          var localurl = this.url + '/' + id;
+          var xhr = new XMLHttpRequest();
+          xhr.open('PUT', localurl, true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          var data = JSON.stringify({'done': done});
+          xhr.send(data);
 
-
-        }
+        },
 
 
 

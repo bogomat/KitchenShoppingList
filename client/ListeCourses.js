@@ -1,41 +1,90 @@
-define('ListeCourses',['TodoServices'],function(TodoServices){
-'use strict';
-    var initList = function(wgtBody) {
-        console.log("Hello World");
-        var inputElt = wgtBody.querySelector('.todo');
-        var formElt = wgtBody.querySelector('.add-form');
-        var checkAllElt = wgtBody.querySelector('.checkall');
-
-        var url = TodoServices.url;
-
+define('ListeCourses', ['ShoppingLine'], function(ShoppingLine) {
+    'use strict';
+    var ListeCourses = function(wgtBody) {
+        this.LineList = [];
+        this.div = wgtBody;
+        this.inputElt = wgtBody.querySelector('.todo');
+        this.formElt = wgtBody.querySelector('.add-form');
+        this.checkAllElt = wgtBody.querySelector('.checkall');
+        this.url = 'http://localhost:8080/api/v1.0/Todos';
+    }
+    ListeCourses.prototype.init = function() {
+        var that = this;
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
+        xhr.open('GET', this.url, true);
 
-        xhr.onload = function () {
-          // Request finished. Do processing here.
-              var todos = JSON.parse(xhr.responseText);
-              todos.forEach(function(todo) {
-                  TodoServices.addLine(wgtBody, todo);
-              });
+        xhr.onload = function() {
+            // Request finished. Do processing here.
+            var todos = JSON.parse(xhr.responseText);
+            todos.forEach(function(todo) {
+                that.addLine(todo);
+            });
         };
 
         xhr.send(null);
-
-        checkAllElt.addEventListener('click', function(e) {
-            var checkBoxes = wgtBody.querySelectorAll('.done');
-            Array.prototype.forEach.call(checkBoxes, function(checkbox) {
-                checkbox.checked = e.currentTarget.checked;
+        this.checkAllElt.addEventListener('click', function(e) {
+            that.LineList.forEach(function(line) {
+                line.setCheck(e.currentTarget.checked);
             });
+
         });
-        formElt.addEventListener('submit', function(e) {
+        this.formElt.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            TodoServices.postLine( wgtBody, {
-                value: inputElt.value,
-                done: checkAllElt.checked
+            that.postLine({
+                value: that.inputElt.value,
+                done: that.checkAllElt.checked
             });
-            inputElt.value = '';
+            that.inputElt.value = '';
         });
-    };
-    return initList;
+    }
+    ListeCourses.prototype.addLine = function(lineParam) {
+        var destElt = this.div.querySelector('.container');
+        var rowElt = new ShoppingLine(lineParam, this);
+        rowElt.build();
+        if (destElt.childElementCount) {
+            destElt.insertBefore(rowElt.div, destElt.firstElementChild);
+        } else {
+            destElt.appendChild(rowElt.div);
+        }
+        var that = this;
+        rowElt.deleteElt.addEventListener('click', function(e) {
+            var parent = e.currentTarget.parentNode;
+            that.removeLine(parent);
+        });
+        this.LineList.push(rowElt);
+    }
+    ListeCourses.prototype.postLine = function(lineParam) {
+        var that = this;
+        lineParam = lineParam || {};
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', that.url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function() {
+            // Request finished. Do processing here.
+            var returnObject = JSON.parse(xhr.responseText);
+            that.addLine(returnObject);
+        };
+        var data = JSON.stringify(lineParam);
+        xhr.send(data);
+    }
+
+    ListeCourses.prototype.removeLine = function(lineElement) {
+        var shopLineIndex = this.LineList.findIndex(function(r){
+          return r.div === lineElement;
+        });
+        var id =this.LineList[shopLineIndex].id;
+        var localurl = this.url + '/' + id;
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', localurl, true);
+        var that = this;
+
+        xhr.onload = function() {
+            // Request finished. Do processing here.
+            lineElement.parentNode.removeChild(lineElement);
+            that.LineList.splice(shopLineIndex,1)
+        };
+        xhr.send();
+    }
+    return ListeCourses;
 });

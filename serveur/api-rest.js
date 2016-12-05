@@ -32,7 +32,7 @@ server.get('/api/v1.0/todos', function(req, res) {
 server.post('/api/v1.0/todos', bodyParser.json(), function(req, res) {
     var todo = req.body;
 
-    todo.id = todos[todos.length-1].id + 1;
+    todo.id = todos[todos.length - 1].id + 1;
 
     todos.push(todo);
 
@@ -42,31 +42,53 @@ server.post('/api/v1.0/todos', bodyParser.json(), function(req, res) {
 
 // afficher
 server.get('/api/v1.0/todos/:id', function(req, res) {
-    var idToFind=Number(req.params.id);
-    var toget = todos.find(function (a) {
-        return a.id===idToFind;
+    var idToFind = Number(req.params.id);
+    var toget = todos.find(function(a) {
+        return a.id === idToFind;
     });
     if (toget) {
-        res.statusCode=201;
+        res.statusCode = 201;
         res.json(toget);
     } else {
-        res.statusCode=406;
+        res.statusCode = 406;
         res.end();
     }
 });
 
 server.delete('/api/v1.0/todos/:id', function(req, res) {
-    var idToFind=Number(req.params.id);
-    var index = todos.findIndex(function (a) {
-        return a.id===idToFind;
+    var idToFind = Number(req.params.id);
+    var index = todos.findIndex(function(a) {
+        return a.id === idToFind;
     });
-    console.log('index:',index);
     if (index === -1) {
-        res.statusCode=406;
+        res.statusCode = 406;
         res.json('error');
     } else {
-        var sliced = todos.splice(index,1);
+        var sliced = todos.splice(index, 1);
         res.json(sliced[0]);
+    }
+});
+
+// Mettre à jour : PUT /api/v1.0/todos/2467
+// header (Content-Type: application/json)
+server.put('/api/v1.0/todos/:id', bodyParser.json(), function(req, res) {
+    var todo = req.body;
+    var idToFind = Number(req.params.id);
+    var toModify = todos.find(function(a) {
+        return a.id === idToFind;
+    });
+    if (toModify) {
+        res.statusCode = 200;
+        if ('value' in todo) {
+          toModify.value = todo.value;
+        }
+        if ('done' in todo) {
+          toModify.done = todo.done;
+        }
+        res.json(toModify);
+    } else {
+        res.statusCode = 406;
+        res.end();
     }
 });
 
